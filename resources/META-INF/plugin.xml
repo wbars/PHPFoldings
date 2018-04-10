@@ -1,0 +1,52 @@
+<idea-plugin>
+  <id>com.wbars.php.folding</id>
+  <name>PHP Foldings</name>
+  <version>1.0</version>
+  <vendor email="smelov.kirill@gmail.com">Kirill Smelov</vendor>
+
+  <description><![CDATA[
+      Foldings for PHP
+    ]]></description>
+
+  <change-notes><![CDATA[
+      <p>Initial version.</p>
+
+      <p>Supported foldings:
+      <ul>
+      <li>Collapsing '$this->' prefix for fields</li>
+      <li>Collapsing '$this->' prefix for methods</li>
+      <li>Replacing getters with field names</li>
+      <li>Replacing setters with field assignments</li>
+      <li>Collapsing basic data classes</li>
+      <li>Collapsing lambdas (partially)</li>
+      <li>Replacing 'array_merge' calls with '::' sequence</li>
+      <li>Replacing 'in_array' calls with 'in'</li>
+      <li>Replacing 'strpos' based conditions with 'contains'/'does not'/'starts with'</li>
+      </ul>
+      </p>
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="173.0"/>
+
+  <depends>com.jetbrains.php</depends>
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <lang.foldingBuilder language="PHP" implementationClass="com.wbars.php.folding.FoldingBuilder"/>
+    <codeFoldingOptionsProvider instance="com.wbars.php.folding.FoldingProvider"/>
+    <applicationService serviceImplementation="com.wbars.php.folding.FoldingConfiguration"/>
+  </extensions>
+  <extensionPoints>
+    <extensionPoint name="functionCallFoldingProvider"
+                    interface="com.wbars.php.folding.functionCallProviders.FunctionCallFoldingProvider">
+    </extensionPoint>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.wbars.php.folding">
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArrayMergeCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.InArrayCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.StrPosCallFoldingProvider"/>
+  </extensions>
+
+</idea-plugin>
