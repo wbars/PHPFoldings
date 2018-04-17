@@ -14,6 +14,7 @@ public class FoldingProvider extends BeanConfigurable<FoldingConfiguration.State
     checkBox("Replace setters with field assignment", settings::isCollapseSetter, settings::setCollapseSetter);
     checkBox("Collapse data classes", settings::isCollapseDataClass, settings::setCollapseDataClass);
     checkBox("Collapse lambdas", settings::isCollapseLambda, settings::setCollapseLambda);
+    checkBox("Collapse full array creation syntax to short version", settings::isCollapseArrays, settings::setCollapseArrays);
 
     for (FunctionCallFoldingProvider provider : FunctionCallFoldingProvider.getAllProviders()) {
       checkBox(provider.getCheckBoxName(), () -> settings.getFunctionCallProviderValue(provider.getName()),

@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.php.lang.PhpLangUtil;
+import com.jetbrains.php.lang.lexer.PhpTokenTypes;
 import com.jetbrains.php.lang.psi.PhpPsiUtil;
 import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.visitors.PhpElementVisitor;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.util.ObjectUtils.tryCast;
+import static com.jetbrains.php.lang.psi.PhpPsiUtil.getNextSiblingIgnoreWhitespace;
+import static com.jetbrains.php.lang.psi.PhpPsiUtil.isOfType;
 import static com.wbars.php.folding.FoldingUtils.getEndOffset;
 
 public class FoldingVisitor extends PhpElementVisitor {
@@ -212,6 +215,21 @@ public class FoldingVisitor extends PhpElementVisitor {
             myDescriptors.add(new NamedFoldingDescriptor(node, body.getLastChild().getTextRange(), group, "}"));
           }
         }
+      }
+    }
+  }
+
+  @Override
+  public void visitPhpArrayCreationExpression(ArrayCreationExpression expression) {
+    if (!expression.isShortSyntax() && myConfiguration.isCollapseArrays()) {
+      final FoldingGroup group = FoldingGroup.newGroup("lambda");
+      final ASTNode node = expression.getNode();
+      final PsiElement firstChild = expression.getFirstChild();
+      final PsiElement openParen = getNextSiblingIgnoreWhitespace(firstChild, true);
+      final PsiElement closeParen = expression.getLastChild();
+      if (isOfType(openParen, PhpTokenTypes.chLPAREN) && isOfType(closeParen, PhpTokenTypes.chRPAREN)) {
+        myDescriptors.add(new NamedFoldingDescriptor(node, new TextRange(expression.getTextOffset(), getEndOffset(openParen)), group, "["));
+        myDescriptors.add(new NamedFoldingDescriptor(node, closeParen.getTextRange(), group, "]"));
       }
     }
   }

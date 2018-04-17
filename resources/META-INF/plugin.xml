@@ -11,17 +11,9 @@
   <change-notes><![CDATA[
       <p>Initial version.</p>
 
-      <p>Supported foldings:
+      <p>New foldings:
       <ul>
-      <li>Collapsing '$this->' prefix for fields</li>
-      <li>Collapsing '$this->' prefix for methods</li>
-      <li>Replacing getters with field names</li>
-      <li>Replacing setters with field assignments</li>
-      <li>Collapsing basic data classes</li>
-      <li>Collapsing lambdas (partially)</li>
-      <li>Replacing 'array_merge' calls with '::' sequence</li>
-      <li>Replacing 'in_array' calls with 'in'</li>
-      <li>Replacing 'strpos' based conditions with 'contains'/'does not'/'starts with'</li>
+      <li>Replace full array creation syntax with short version</li>
       </ul>
       </p>
     ]]>

@@ -62,6 +62,14 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     myState.LAMBDA = value;
   }
 
+  public boolean isCollapseArrays() {
+    return myState.ARRAYS;
+  }
+
+  public void setCollapseArrays(boolean value) {
+    myState.ARRAYS = value;
+  }
+
   public boolean getFunctionCallProviderValue(String name) {
     return myState.getCustomValue(name);
   }
@@ -80,6 +88,7 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     public boolean SETTERS = true;
     public boolean DATA_CLASS = true;
     public boolean LAMBDA = true;
+    public boolean ARRAYS = true;
     private final Map<String, Boolean> custom = new HashMap<>();
 
     public boolean getCustomValue(String name) {
