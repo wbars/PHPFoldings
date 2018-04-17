@@ -2,10 +2,7 @@ package com.wbars.php.folding;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingDescriptor;
-import com.intellij.lang.folding.NamedFoldingDescriptor;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.FoldingGroup;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.php.lang.PhpLangUtil;
@@ -15,6 +12,7 @@ import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.visitors.PhpElementVisitor;
 import com.wbars.php.folding.functionCallProviders.FunctionCallFoldingProvider;
 import one.util.streamex.StreamEx;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ import java.util.List;
 import static com.intellij.util.ObjectUtils.tryCast;
 import static com.jetbrains.php.lang.psi.PhpPsiUtil.getNextSiblingIgnoreWhitespace;
 import static com.jetbrains.php.lang.psi.PhpPsiUtil.isOfType;
-import static com.wbars.php.folding.FoldingUtils.getEndOffset;
 
 public class FoldingVisitor extends PhpElementVisitor {
   private final List<FoldingDescriptor> myDescriptors;
@@ -33,6 +30,11 @@ public class FoldingVisitor extends PhpElementVisitor {
     myDescriptors = descriptors;
     myQuick = quick;
     myConfiguration = FoldingConfiguration.getInstance();
+  }
+
+  @NotNull
+  private FoldingDescriptorBuilder fold(PsiElement element, String name) {
+    return new FoldingDescriptorBuilder(element, name, myDescriptors);
   }
 
 
@@ -53,29 +55,23 @@ public class FoldingVisitor extends PhpElementVisitor {
     final ASTNode nameNode = methodReference.getNameNode();
     if (nameNode != null) {
       if (myConfiguration.isCollapseThisPrefixMethods() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
-        myDescriptors.add(new NamedFoldingDescriptor(methodReference.getNode(),
-                                                     new TextRange(methodReference.getTextOffset(), nameNode.getTextRange().getEndOffset()),
-                                                     FoldingGroup.newGroup("thisCall"), nameNode.getText()));
+        final FoldingDescriptorBuilder fold = fold(methodReference, "thisCall");
+        fold.fromStart(methodReference).toEnd(nameNode).text(nameNode);
       }
       else if (!myQuick || ApplicationManager.getApplication().isUnitTestMode()) {
         if (myConfiguration.isCollapseGetter() && isGetter(methodReference)) {
-          myDescriptors.add(new NamedFoldingDescriptor(methodReference.getNode(), new TextRange(nameNode.getStartOffset(),
-                                                                                                getEndOffset(methodReference)),
-                                                       FoldingGroup.newGroup("getter"), getFieldName(nameNode.getText())));
+          fold(methodReference, "getter").fromStart(nameNode).toEnd(methodReference).text(getFieldName(nameNode.getText()));
         }
         if (myConfiguration.isCollapseSetter() && isSetter(methodReference)) {
           final PsiElement parameter = methodReference.getParameters()[0];
-          final FoldingGroup group = FoldingGroup.newGroup("setter");
+          final FoldingDescriptorBuilder fold = fold(methodReference, "setter");
           final String name = getFieldSetterName(methodReference.getName());
-          myDescriptors.add(new NamedFoldingDescriptor(methodReference.getNode(), new TextRange(methodReference.getNameNode().getStartOffset(),
-                                                                                                  parameter.getTextOffset()), group, name + " = "));
-          myDescriptors.add(new NamedFoldingDescriptor(methodReference.getNode(), new TextRange(getEndOffset(parameter), getEndOffset(methodReference)), group, ""));
+          fold.fromStart(methodReference.getNameNode()).toStart(parameter).text(name + " = ");
+          fold.fromEnd(parameter).toEnd(methodReference).empty();
         }
       }
       else if (myConfiguration.isCollapseGetter() && (!myQuick || ApplicationManager.getApplication().isUnitTestMode()) && isGetter(methodReference)) {
-        myDescriptors.add(new NamedFoldingDescriptor(methodReference.getNode(), new TextRange(nameNode.getStartOffset(),
-                                                                                              getEndOffset(methodReference)),
-                                                     FoldingGroup.newGroup("getter"), getFieldName(nameNode.getText())));
+        fold(methodReference, "setter").fromStart(nameNode).toEnd(methodReference).text(getFieldName(nameNode.getText()));
       }
     }
   }
@@ -98,8 +94,7 @@ public class FoldingVisitor extends PhpElementVisitor {
         fields.add(modifier + " $" + fieldName + ";");
       }
       if (trivialMethodsCount == methods.length) {
-        myDescriptors.add(new NamedFoldingDescriptor(clazz.getNode(), clazz.getTextRange(), FoldingGroup.newGroup("pojo"),
-                                                     clazz.getName() + "(" + StreamEx.of(fields).joining(" ") + ")"));
+        fold(clazz, "pojo").text(clazz, clazz.getName() + "(" + StreamEx.of(fields).joining(" ") + ")");
       }
     }
   }
@@ -173,9 +168,7 @@ public class FoldingVisitor extends PhpElementVisitor {
     if (myConfiguration.isCollapseThisPrefixFields() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
       final ASTNode nameNode = fieldReference.getNameNode();
       if (nameNode != null) {
-        myDescriptors.add(
-          new NamedFoldingDescriptor(fieldReference.getNode(), fieldReference.getTextRange(), FoldingGroup.newGroup("thisField"),
-                                     nameNode.getText()));
+        fold(fieldReference, "thisField").text(fieldReference, nameNode.getText());
       }
     }
   }
@@ -184,35 +177,26 @@ public class FoldingVisitor extends PhpElementVisitor {
   public void visitPhpFunction(Function function) {
     super.visitPhpFunction(function);
     if (myConfiguration.isCollapseLambda() && function.isClosure()) {
-      final FoldingGroup group = FoldingGroup.newGroup("lambda");
+      final FoldingDescriptorBuilder fold = fold(function, "lambda");
       final GroupStatement body = PhpPsiUtil.getChildByCondition(function, GroupStatement.INSTANCEOF);
       final ParameterList list = PhpPsiUtil.getChildByCondition(function, ParameterList.INSTANCEOF);
       if (body != null && list != null) {
         final PsiElement closeBrace = PhpPsiUtil.getNextSiblingIgnoreWhitespace(list, true);
         final PsiElement openBrace = PhpPsiUtil.getPrevSiblingIgnoreWhitespace(list, true);
         if (openBrace != null && closeBrace != null) {
-          final ASTNode node = function.getNode();
-          myDescriptors.add(
-            new NamedFoldingDescriptor(node, new TextRange(function.getFirstChild().getTextOffset(), openBrace.getTextOffset()), group,
-                                       ""));
+          fold.fromStart(function.getFirstChild()).toStart(openBrace).empty();
           final PsiElement[] statements = body.getStatements();
           if (statements.length == 1 && statements[0] instanceof PhpReturn) {
             final PhpReturn phpReturn = tryCast(statements[0], PhpReturn.class);
             if (phpReturn == null) return;
             final PsiElement argument = phpReturn.getArgument();
             if (argument == null) return;
-            final ASTNode openBraceNode = openBrace.getNode();
-            myDescriptors.add(
-              new NamedFoldingDescriptor(openBraceNode, new TextRange(getEndOffset(closeBrace), argument.getTextOffset()), group, " -> "));
-            myDescriptors.add(
-              new NamedFoldingDescriptor(openBraceNode, new TextRange(getEndOffset(argument), getEndOffset(body.getLastChild())), group,
-                                         ""));
+            fold.fromEnd(closeBrace).toStart(argument).text(" -> ");
+            fold.fromEnd(argument).toEnd(body.getLastChild()).empty();
           }
           else {
-            myDescriptors.add(
-              new NamedFoldingDescriptor(node, new TextRange(getEndOffset(closeBrace), getEndOffset(body.getFirstChild())), group,
-                                         " -> {"));
-            myDescriptors.add(new NamedFoldingDescriptor(node, body.getLastChild().getTextRange(), group, "}"));
+            fold.fromEnd(closeBrace).toEnd(body.getFirstChild()).text(" -> {");
+            fold.text(body.getLastChild(), "}");
           }
         }
       }
@@ -222,14 +206,13 @@ public class FoldingVisitor extends PhpElementVisitor {
   @Override
   public void visitPhpArrayCreationExpression(ArrayCreationExpression expression) {
     if (!expression.isShortSyntax() && myConfiguration.isCollapseArrays()) {
-      final FoldingGroup group = FoldingGroup.newGroup("lambda");
-      final ASTNode node = expression.getNode();
+      final FoldingDescriptorBuilder fold = fold(expression, "lambda");
       final PsiElement firstChild = expression.getFirstChild();
       final PsiElement openParen = getNextSiblingIgnoreWhitespace(firstChild, true);
       final PsiElement closeParen = expression.getLastChild();
       if (isOfType(openParen, PhpTokenTypes.chLPAREN) && isOfType(closeParen, PhpTokenTypes.chRPAREN)) {
-        myDescriptors.add(new NamedFoldingDescriptor(node, new TextRange(expression.getTextOffset(), getEndOffset(openParen)), group, "["));
-        myDescriptors.add(new NamedFoldingDescriptor(node, closeParen.getTextRange(), group, "]"));
+        fold.fromStart(expression).toEnd(openParen).text("[");
+        fold.text(closeParen, "]");
       }
     }
   }
