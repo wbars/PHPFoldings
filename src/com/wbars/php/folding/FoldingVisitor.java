@@ -78,7 +78,7 @@ public class FoldingVisitor extends PhpElementVisitor {
 
   @Override
   public void visitPhpClass(PhpClass clazz) {
-    if (myConfiguration.isCollapseDataClass() && clazz.getSupers().length == 0) {
+    if (myConfiguration.isCollapseDataClass() && clazz.getSuperFQN() != null) {
       int trivialMethodsCount = 0;
       final Method[] methods = clazz.getOwnMethods();
       List<String> fields = new ArrayList<>();
