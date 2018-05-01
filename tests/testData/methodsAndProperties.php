@@ -9,6 +9,9 @@ class B {<fold text='...'>
     public function aa() {<fold text='...'>
         <fold text=''>$this-></fold>a;
         <fold text=''>$this-></fold>bb();
+        $b = "a";
+        $this->$b;
+        $this->$b();
 
         $a = new A();
         $a->aa();
