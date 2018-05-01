@@ -57,6 +57,11 @@ public class FoldingVisitor extends PhpElementVisitor {
       if (myConfiguration.isCollapseThisPrefixMethods() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
         fold(methodReference, "thisCall").fromStart(methodReference).toStart(nameNode).empty();
       }
+      else if (myConfiguration.isCollapseSelfPrefixMethods() &&
+               classReference instanceof ClassReference &&
+               PhpLangUtil.isSelfReference((ClassReference)classReference)) {
+        fold(methodReference, "selfCall").fromStart(methodReference).toStart(nameNode).empty();
+      }
       else if (!myQuick || ApplicationManager.getApplication().isUnitTestMode()) {
         if (myConfiguration.isCollapseGetter() && isGetter(methodReference)) {
           fold(methodReference, "getter").fromStart(nameNode).toEnd(methodReference).text(getFieldName(nameNode.getText()));
@@ -164,10 +169,15 @@ public class FoldingVisitor extends PhpElementVisitor {
   public void visitPhpFieldReference(FieldReference fieldReference) {
     super.visitPhpFieldReference(fieldReference);
     final PhpExpression classReference = fieldReference.getClassReference();
-    if (myConfiguration.isCollapseThisPrefixFields() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
-      final ASTNode nameNode = fieldReference.getNameNode();
-      if (nameNode != null) {
+    final ASTNode nameNode = fieldReference != null ? fieldReference.getNameNode() : null;
+    if (nameNode != null) {
+      if (myConfiguration.isCollapseThisPrefixFields() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
         fold(fieldReference, "thisField").fromStart(fieldReference).toStart(nameNode).empty();
+      }
+      else if (myConfiguration.isCollapseSelfPrefixFields() &&
+               classReference instanceof ClassReference &&
+               PhpLangUtil.isSelfReference(((ClassReference)classReference))) {
+        fold(fieldReference, "selfField").fromStart(fieldReference).toStart(nameNode).empty();
       }
     }
   }

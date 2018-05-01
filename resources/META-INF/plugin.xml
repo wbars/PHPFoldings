@@ -14,6 +14,8 @@
       <p>New foldings:
       <ul>
       <li>Replace full array creation syntax with short version</li>
+      <li>Collapse 'self::' for field references</li>
+      <li>Collapse 'self::' for method references</li>
       </ul>
       Bugs:
       <ul>

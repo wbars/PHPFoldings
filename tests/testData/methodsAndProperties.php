@@ -6,6 +6,7 @@ class A {<fold text='...'>
 
 class B {<fold text='...'>
     protected $a;
+    protected static $c;
     public function aa() {<fold text='...'>
         <fold text=''>$this-></fold>a;
         <fold text=''>$this-></fold>bb();
@@ -13,9 +14,16 @@ class B {<fold text='...'>
         $this->$b;
         $this->$b();
 
+        <fold text=''>self::</fold>bb();
+        <fold text=''>self::</fold>$c;
+
         $a = new A();
         $a->aa();
         $a->b;
+
+        A::bb();
+        A::$c;
     </fold>}
     public function bb() {}
+    public static function cc() {}
 </fold>}
