@@ -94,6 +94,14 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     myState.SELF_PREFIX_METHODS = value;
   }
 
+  public boolean isCollapseSelfPrefixConstants() {
+    return myState.SELF_PREFIX_CONSTANTS;
+  }
+
+  public void setCollapseSelfPrefixConstants(boolean value) {
+    myState.SELF_PREFIX_CONSTANTS = value;
+  }
+
   public static FoldingConfiguration getInstance() {
     return ServiceManager.getService(FoldingConfiguration.class);
   }
@@ -102,6 +110,7 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     public boolean THIS_PREFIX_METHODS = true;
     public boolean SELF_PREFIX_FIELDS = true;
     public boolean SELF_PREFIX_METHODS = true;
+    public boolean SELF_PREFIX_CONSTANTS = true;
     public boolean GETTERS = true;
     public boolean SETTERS = true;
     public boolean DATA_CLASS = true;

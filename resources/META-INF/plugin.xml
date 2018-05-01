@@ -16,6 +16,7 @@
       <li>Replace full array creation syntax with short version</li>
       <li>Collapse 'self::' for field references</li>
       <li>Collapse 'self::' for method references</li>
+      <li>Collapse 'self::' for constant references</li>
       </ul>
       Bugs:
       <ul>

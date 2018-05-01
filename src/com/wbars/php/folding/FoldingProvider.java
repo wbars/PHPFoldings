@@ -12,6 +12,7 @@ public class FoldingProvider extends BeanConfigurable<FoldingConfiguration.State
     checkBox("Collapse '$this->' prefix for methods", settings::isCollapseThisPrefixMethods, settings::setCollapseThisPrefixMethods);
     checkBox("Collapse 'self::' prefix for fields", settings::isCollapseSelfPrefixFields, settings::setCollapseSelfPrefixFields);
     checkBox("Collapse 'self::' prefix for methods", settings::isCollapseSelfPrefixMethods, settings::setCollapseSelfPrefixMethods);
+    checkBox("Collapse 'self::' prefix for class constants", settings::isCollapseSelfPrefixConstants, settings::setCollapseSelfPrefixConstants);
     checkBox("Replace getters with field names", settings::isCollapseGetter, settings::setCollapseGetter);
     checkBox("Replace setters with field assignment", settings::isCollapseSetter, settings::setCollapseSetter);
     checkBox("Collapse data classes", settings::isCollapseDataClass, settings::setCollapseDataClass);

@@ -5,6 +5,7 @@ import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.ObjectUtils;
 import com.jetbrains.php.lang.PhpLangUtil;
 import com.jetbrains.php.lang.lexer.PhpTokenTypes;
 import com.jetbrains.php.lang.psi.PhpPsiUtil;
@@ -222,6 +223,18 @@ public class FoldingVisitor extends PhpElementVisitor {
       if (isOfType(openParen, PhpTokenTypes.chLPAREN) && isOfType(closeParen, PhpTokenTypes.chRPAREN)) {
         fold.fromStart(expression).toEnd(openParen).text("[");
         fold.text(closeParen, "]");
+      }
+    }
+  }
+
+  @Override
+  public void visitPhpClassConstantReference(ClassConstantReference constantReference) {
+    super.visitPhpClassConstantReference(constantReference);
+    final ClassReference classReference = ObjectUtils.tryCast(constantReference.getClassReference(), ClassReference.class);
+    if (myConfiguration.isCollapseSelfPrefixConstants() && classReference != null && PhpLangUtil.isSelfReference(classReference)) {
+      final ASTNode nameNode = constantReference.getNameNode();
+      if (nameNode != null) {
+        fold(constantReference, "selfConstant").fromStart(constantReference).toStart(nameNode).empty();
       }
     }
   }
