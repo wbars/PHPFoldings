@@ -15,6 +15,10 @@
       <ul>
       <li>Replace full array creation syntax with short version</li>
       </ul>
+      Bugs:
+      <ul>
+      <li>Fold '$this->` for methods and field references instead of folding the whole reference with placeholder text</li>
+      </ul>
       </p>
     ]]>
   </change-notes>

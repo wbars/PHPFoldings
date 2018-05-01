@@ -4,7 +4,7 @@ class A {<fold text='...'>
     private $c;
 
     public function setA($a) {<fold text='...'>
-        <fold text='a'>$this->a</fold> = $a;
+        <fold text=''>$this-></fold>a = $a;
     </fold>}
 
     public function setB($a) {<fold text='...'>
@@ -12,7 +12,7 @@ class A {<fold text='...'>
     </fold>}
 
     public function setC($c) {<fold text='...'>
-        <fold text='c'>$this->c</fold> = $c;
+        <fold text=''>$this-></fold>c = $c;
         return $this;
     </fold>}
 </fold>}

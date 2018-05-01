@@ -7,23 +7,23 @@ class A {<fold text='...'>
     private $f;
 
     public function getA() {<fold text='...'>
-        return <fold text='a'>$this->a</fold>;
+        return <fold text=''>$this-></fold>a;
     </fold>}
 
     public function getB() {<fold text='...'>
         // wrong field
-        return <fold text='c'>$this->c</fold>;
+        return <fold text=''>$this-></fold>c;
     </fold>}
 
     public function getF($a) {<fold text='...'>
         // wrong field
-        return <fold text='f'>$this->f</fold>;
+        return <fold text=''>$this-></fold>f;
     </fold>}
 
     public function getC() {<fold text='...'>
         // non trivial
         echo "b";
-        return <fold text='d'>$this->d</fold>;
+        return <fold text=''>$this-></fold>d;
     </fold>}
 
     public function getD() {<fold text='...'>

@@ -7,8 +7,8 @@ class A {<fold text='...'>
 class B {<fold text='...'>
     protected $a;
     public function aa() {<fold text='...'>
-        <fold text='a'>$this->a</fold>;
-        <fold text='bb'>$this->bb</fold>();
+        <fold text=''>$this-></fold>a;
+        <fold text=''>$this-></fold>bb();
 
         $a = new A();
         $a->aa();

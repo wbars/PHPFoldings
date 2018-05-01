@@ -69,6 +69,12 @@ public class FoldingDescriptorBuilder {
     return this;
   }
 
+  public FoldingDescriptorBuilder toStart(ASTNode node) {
+    assertCanBeEnded();
+    myToOffset = node.getTextRange().getStartOffset();
+    return this;
+  }
+
   public FoldingDescriptorBuilder toEnd(PsiElement element) {
     assertCanBeEnded();
     myToOffset = element.getTextRange().getEndOffset();

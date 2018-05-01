@@ -55,8 +55,7 @@ public class FoldingVisitor extends PhpElementVisitor {
     final ASTNode nameNode = methodReference.getNameNode();
     if (nameNode != null) {
       if (myConfiguration.isCollapseThisPrefixMethods() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
-        final FoldingDescriptorBuilder fold = fold(methodReference, "thisCall");
-        fold.fromStart(methodReference).toEnd(nameNode).text(nameNode);
+        fold(methodReference, "thisCall").fromStart(methodReference).toStart(nameNode).empty();
       }
       else if (!myQuick || ApplicationManager.getApplication().isUnitTestMode()) {
         if (myConfiguration.isCollapseGetter() && isGetter(methodReference)) {
@@ -168,7 +167,7 @@ public class FoldingVisitor extends PhpElementVisitor {
     if (myConfiguration.isCollapseThisPrefixFields() && classReference != null && PhpLangUtil.isThisReference(classReference)) {
       final ASTNode nameNode = fieldReference.getNameNode();
       if (nameNode != null) {
-        fold(fieldReference, "thisField").text(fieldReference, nameNode.getText());
+        fold(fieldReference, "thisField").fromStart(fieldReference).toStart(nameNode).empty();
       }
     }
   }
