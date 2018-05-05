@@ -1,9 +1,6 @@
 package com.wbars.php.folding.functionCallProviders;
 
 import com.intellij.lang.folding.FoldingDescriptor;
-import com.intellij.lang.folding.NamedFoldingDescriptor;
-import com.intellij.openapi.editor.FoldingGroup;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
@@ -11,12 +8,12 @@ import com.intellij.psi.tree.TokenSet;
 import com.jetbrains.php.lang.PhpLangUtil;
 import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.resolve.types.PhpType;
+import com.wbars.php.folding.FoldingDescriptorBuilder;
 
 import java.util.List;
 
 import static com.jetbrains.php.lang.lexer.PhpTokenTypes.*;
 import static com.jetbrains.php.lang.psi.PhpPsiUtil.isOfType;
-import static com.wbars.php.folding.FoldingUtils.getEndOffset;
 
 public class StrPosCallFoldingProvider extends FunctionCallFoldingProvider {
   private static final TokenSet EQUALITY_SET = TokenSet.create(opEQUAL, opNOT_EQUAL, opIDENTICAL, opNOT_IDENTICAL);
@@ -95,15 +92,11 @@ public class StrPosCallFoldingProvider extends FunctionCallFoldingProvider {
   }
 
   private void addDescriptors(FunctionReference functionCall, PsiElement parent, List<FoldingDescriptor> myDescriptors, String placeholder) {
-    final FoldingGroup group = FoldingGroup.newGroup("startsWith");
+    final FoldingDescriptorBuilder fold = new FoldingDescriptorBuilder(parent, "startsWith", myDescriptors);
     final PsiElement[] parameters = functionCall.getParameters();
-    myDescriptors
-      .add(new NamedFoldingDescriptor(parent.getNode(), new TextRange(parent.getTextOffset(), parameters[0].getTextOffset()), group, ""));
-    myDescriptors.add(
-      new NamedFoldingDescriptor(parent.getNode(), new TextRange(getEndOffset(parameters[0]), parameters[1].getTextOffset()), group,
-                                 placeholder));
-    myDescriptors
-      .add(new NamedFoldingDescriptor(parent.getNode(), new TextRange(getEndOffset(parameters[1]), getEndOffset(parent)), group, ""));
+    fold.fromStart(parent).toStart(parameters[0]).empty();
+    fold.fromEnd(parameters[0]).toStart(parameters[1]).text(placeholder);
+    fold.fromEnd(parameters[1]).toEnd(parent).empty();
   }
 
   private static String getPlaceholder(String argument, IElementType type) {
