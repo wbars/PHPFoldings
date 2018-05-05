@@ -11,15 +11,7 @@
   <change-notes><![CDATA[
       <p>New foldings:
       <ul>
-      <li>Replace full array creation syntax with short version</li>
-      <li>Collapse 'self::' for field references</li>
-      <li>Collapse 'self::' for method references</li>
-      <li>Collapse 'self::' for constant references</li>
-      </ul>
-      Bugs:
-      <ul>
-      <li>Fixed "IndexNotReadyException" for data-class folding</li>
-      <li>Fold '$this->` for methods and field references instead of folding the whole reference with placeholder text</li>
+      <li>Replace 'array_slice' call with slice notation</li>
       </ul>
       </p>
     ]]>
@@ -45,6 +37,7 @@
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArrayMergeCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.InArrayCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.StrPosCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArraySliceCallFoldingProvider"/>
   </extensions>
 
 </idea-plugin>
