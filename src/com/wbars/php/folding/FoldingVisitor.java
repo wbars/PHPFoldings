@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ObjectUtils;
 import com.jetbrains.php.lang.PhpLangUtil;
 import com.jetbrains.php.lang.lexer.PhpTokenTypes;
+import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.PhpPsiUtil;
 import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.visitors.PhpElementVisitor;
@@ -235,6 +236,23 @@ public class FoldingVisitor extends PhpElementVisitor {
       final ASTNode nameNode = constantReference.getNameNode();
       if (nameNode != null) {
         fold(constantReference, "selfConstant").fromStart(constantReference).toStart(nameNode).empty();
+      }
+    }
+  }
+
+  @Override
+  public void visitPhpUnaryExpression(UnaryExpression expression) {
+    super.visitPhpUnaryExpression(expression);
+    if (myConfiguration.isCollapseNotInstanceof() && isOfType(expression.getOperation(), PhpTokenTypes.opNOT)) {
+      final ParenthesizedExpression value = ObjectUtils.tryCast(expression.getValue(), ParenthesizedExpression.class);
+      if (value != null) {
+        final BinaryExpression instanceofExpression = ObjectUtils.tryCast(value.extract(), BinaryExpression.class);
+        if (isOfType(instanceofExpression, PhpElementTypes.INSTANCEOF_EXPRESSION)) {
+          final FoldingDescriptorBuilder fold = fold(expression, "notInstanceof");
+          fold.fromStart(expression).toStart(instanceofExpression.getLeftOperand()).empty();
+          fold.fromEnd(instanceofExpression.getLeftOperand()).toStart(instanceofExpression.getOperation()).text(" not ");
+          fold.fromEnd(instanceofExpression).toEnd(expression).empty();
+        }
       }
     }
   }

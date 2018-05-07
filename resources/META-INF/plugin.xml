@@ -12,6 +12,7 @@
       <p>New foldings:
       <ul>
       <li>Replace 'array_slice' call with slice notation</li>
+      <li>Replace negation of instanceof with "not instanceof"</li>
       </ul>
       </p>
     ]]>

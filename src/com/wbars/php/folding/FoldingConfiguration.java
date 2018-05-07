@@ -102,6 +102,14 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     myState.SELF_PREFIX_CONSTANTS = value;
   }
 
+  public boolean isCollapseNotInstanceof() {
+    return myState.NOT_INSTANCEOF;
+  }
+
+  public void setCollapseNotInstanceof(boolean value) {
+    myState.NOT_INSTANCEOF = value;
+  }
+
   public static FoldingConfiguration getInstance() {
     return ServiceManager.getService(FoldingConfiguration.class);
   }
@@ -116,6 +124,7 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     public boolean DATA_CLASS = true;
     public boolean LAMBDA = true;
     public boolean ARRAYS = true;
+    public boolean NOT_INSTANCEOF = true;
     private final Map<String, Boolean> custom = new HashMap<>();
 
     public boolean getCustomValue(String name) {
