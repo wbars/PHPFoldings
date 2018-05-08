@@ -13,6 +13,7 @@
       <ul>
       <li>Replace 'array_slice' call with slice notation</li>
       <li>Replace negation of instanceof with "not instanceof"</li>
+      <li>Collapse namespace reference</li>
       </ul>
       </p>
     ]]>

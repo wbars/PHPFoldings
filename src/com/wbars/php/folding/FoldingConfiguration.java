@@ -110,6 +110,14 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     myState.NOT_INSTANCEOF = value;
   }
 
+  public boolean isCollapseNamespaceReference() {
+    return myState.NAMESPACE_REFERENCE;
+  }
+
+  public void setCollapseNamespaceReference(boolean value) {
+    myState.NAMESPACE_REFERENCE = value;
+  }
+
   public static FoldingConfiguration getInstance() {
     return ServiceManager.getService(FoldingConfiguration.class);
   }
@@ -125,6 +133,7 @@ public class FoldingConfiguration implements PersistentStateComponent<FoldingCon
     public boolean LAMBDA = true;
     public boolean ARRAYS = true;
     public boolean NOT_INSTANCEOF = true;
+    public boolean NAMESPACE_REFERENCE = true;
     private final Map<String, Boolean> custom = new HashMap<>();
 
     public boolean getCustomValue(String name) {

@@ -53,4 +53,8 @@ public class FoldingTestCase extends LightPlatformCodeInsightFixtureTestCase {
   public void testNotInstanceof() {
     doTest();
   }
+
+  public void testNamespaceReference() {
+    doTest();
+  }
 }

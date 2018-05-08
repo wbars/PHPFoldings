@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.util.ObjectUtils.tryCast;
+import static com.jetbrains.php.lang.documentation.phpdoc.parser.PhpDocElementTypes.phpDocSpecialTag;
+import static com.jetbrains.php.lang.parser.PhpStubElementTypes.USE;
 import static com.jetbrains.php.lang.psi.PhpPsiUtil.getNextSiblingIgnoreWhitespace;
 import static com.jetbrains.php.lang.psi.PhpPsiUtil.isOfType;
 
@@ -253,6 +255,19 @@ public class FoldingVisitor extends PhpElementVisitor {
           fold.fromEnd(instanceofExpression.getLeftOperand()).toStart(instanceofExpression.getOperation()).text(" not ");
           fold.fromEnd(instanceofExpression).toEnd(expression).empty();
         }
+      }
+    }
+  }
+
+  @Override
+  public void visitPhpClassReference(ClassReference classReference) {
+    super.visitPhpClassReference(classReference);
+    if (myConfiguration.isCollapseNamespaceReference() &&
+        PhpPsiUtil.getParentByCondition(classReference, e -> isOfType(e, phpDocSpecialTag, USE)) == null) {
+      final PhpNamespaceReference namespaceReference = PhpPsiUtil.getChildByCondition(classReference, PhpNamespaceReference.INSTANCEOF);
+      if (namespaceReference != null && !PhpLangUtil.isGlobalNamespaceFQN(classReference.getNamespaceName())) {
+        fold(namespaceReference, "namespaceReference").fromStart(namespaceReference.getFirstChild())
+                                                      .toStart(namespaceReference.getLastChild()).text("...");
       }
     }
   }
