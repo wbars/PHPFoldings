@@ -11,9 +11,7 @@
   <change-notes><![CDATA[
       <p>New foldings:
       <ul>
-      <li>Replace 'array_slice' call with slice notation</li>
-      <li>Replace negation of instanceof with "not instanceof"</li>
-      <li>Collapse namespace reference</li>
+      <li>Replace "count" based conditions with empty/notEmpty</li>
       </ul>
       </p>
     ]]>
@@ -40,6 +38,7 @@
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.InArrayCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.StrPosCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArraySliceCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.EmptinessCheckWithCountCallFoldingProvider"/>
   </extensions>
 
 </idea-plugin>

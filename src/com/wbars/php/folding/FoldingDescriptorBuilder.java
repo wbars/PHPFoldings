@@ -31,7 +31,10 @@ public class FoldingDescriptorBuilder {
   }
 
   public void text(String text) {
-    myDescriptors.add(new NamedFoldingDescriptor(myNode, new TextRange(myFromOffset, myToOffset), myGroup, text));
+    final TextRange range = new TextRange(myFromOffset, myToOffset);
+    if (!range.isEmpty()) {
+      myDescriptors.add(new NamedFoldingDescriptor(myNode, range, myGroup, text));
+    }
     //todo replace with inner builder, now to expensive for just two variables
     myFromOffset = -1;
     myToOffset = -1;
