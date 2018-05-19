@@ -12,6 +12,7 @@
       <p>New foldings:
       <ul>
       <li>Replace "count" based conditions with empty/notEmpty</li>
+      <li>Replace 'array_push' call with assignment</li>
       </ul>
       </p>
     ]]>
@@ -39,6 +40,7 @@
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.StrPosCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArraySliceCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.EmptinessCheckWithCountCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArrayPushCallFoldingProvider"/>
   </extensions>
 
 </idea-plugin>
