@@ -13,6 +13,7 @@
       <ul>
       <li>Replace "count" based conditions with empty/notEmpty</li>
       <li>Replace 'array_push' call with assignment</li>
+      <li>Replace 'boolval/intval/floatval/strval/doubleval' call with type casting</li>
       </ul>
       </p>
     ]]>
@@ -41,6 +42,11 @@
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArraySliceCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.EmptinessCheckWithCountCallFoldingProvider"/>
     <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.ArrayPushCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.typeVal.IntValCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.typeVal.BoolValCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.typeVal.FloatValCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.typeVal.DoubleValCallFoldingProvider"/>
+    <functionCallFoldingProvider implementation="com.wbars.php.folding.functionCallProviders.typeVal.StrValCallFoldingProvider"/>
   </extensions>
 
 </idea-plugin>
