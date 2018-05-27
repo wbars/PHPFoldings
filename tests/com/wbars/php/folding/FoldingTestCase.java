@@ -65,4 +65,8 @@ public class FoldingTestCase extends LightPlatformCodeInsightFixtureTestCase {
   public void testArrayPush() {
     doTest();
   }
+
+  public void testTypeVal() {
+    doTest();
+  }
 }
