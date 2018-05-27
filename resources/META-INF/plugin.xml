@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.wbars.php.folding</id>
   <name>PHP Foldings</name>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <vendor email="smelov.kirill@gmail.com">Kirill Smelov</vendor>
 
   <description><![CDATA[
