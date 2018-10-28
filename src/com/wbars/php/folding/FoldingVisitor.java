@@ -15,6 +15,7 @@ import com.jetbrains.php.lang.psi.visitors.PhpElementVisitor;
 import com.wbars.php.folding.functionCallProviders.FunctionCallFoldingProvider;
 import one.util.streamex.StreamEx;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -246,17 +247,20 @@ public class FoldingVisitor extends PhpElementVisitor {
   public void visitPhpUnaryExpression(UnaryExpression expression) {
     super.visitPhpUnaryExpression(expression);
     if (myConfiguration.isCollapseNotInstanceof() && isOfType(expression.getOperation(), PhpTokenTypes.opNOT)) {
-      final ParenthesizedExpression value = ObjectUtils.tryCast(expression.getValue(), ParenthesizedExpression.class);
-      if (value != null) {
-        final BinaryExpression instanceofExpression = ObjectUtils.tryCast(value.extract(), BinaryExpression.class);
-        if (isOfType(instanceofExpression, PhpElementTypes.INSTANCEOF_EXPRESSION)) {
-          final FoldingDescriptorBuilder fold = fold(expression, "notInstanceof");
-          fold.fromStart(expression).toStart(instanceofExpression.getLeftOperand()).empty();
-          fold.fromEnd(instanceofExpression.getLeftOperand()).toStart(instanceofExpression.getOperation()).text(" not ");
-          fold.fromEnd(instanceofExpression).toEnd(expression).empty();
-        }
+      BinaryExpression instanceofExpression = extractInstanceof(expression.getValue());
+      if (instanceofExpression != null) {
+        final FoldingDescriptorBuilder fold = fold(expression, "notInstanceof");
+        fold.fromStart(expression).toStart(instanceofExpression.getLeftOperand()).empty();
+        fold.fromEnd(instanceofExpression.getLeftOperand()).toStart(instanceofExpression.getOperation()).text(" not ");
+        fold.fromEnd(instanceofExpression).toEnd(expression).empty();
       }
     }
+  }
+
+  @Nullable
+  private static BinaryExpression extractInstanceof(@Nullable PhpPsiElement value) {
+    PhpPsiElement result = value instanceof ParenthesizedExpression ? ((ParenthesizedExpression)value).extract() : value;
+    return result instanceof BinaryExpression && isOfType(result, PhpElementTypes.INSTANCEOF_EXPRESSION) ? ((BinaryExpression)result) : null;
   }
 
   @Override
